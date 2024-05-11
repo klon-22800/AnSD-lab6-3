@@ -51,7 +51,7 @@ namespace graph {
 
 	public:
 		Graph() = default;
-
+		~Graph() = default;
 		//VERTEX
 		bool has_vertex(const V& val) const {
 			if (G.contains(val))
@@ -140,7 +140,7 @@ namespace graph {
 		}
 
 		//UTILS
-		vector<pair<V, Distance>> edges_list(const V& val) {
+		vector<pair<V, Distance>> edges_vector(const V& val) {
 			vector<pair<V, Distance>> edges;
 			if (G.contains(val)) {
 				for (typename list<Edge>::iterator it = G[val]._edge.begin(); it != G[val]._edge.end(); it++) {
@@ -185,13 +185,14 @@ namespace graph {
 
 		unordered_map<V, Distance>  BellmanFord(const V& start) {
 			if (G.contains(start)) {
+				size_t size = G.size();
 				unordered_map<V, Distance> distance;
 				for (const auto& [key, val] : G) {
 					distance[key] = numeric_limits<Distance>::max();
 				}
-				unordered_map<V, bool> visited;
+				unordered_map<V, size_t> visited;
 				for (const auto& [key, val] : G) {
-					visited[key] = false;
+					visited[key] = 0;
 				}
 				queue<V> q;
 				distance[start] = 0;
@@ -200,18 +201,21 @@ namespace graph {
 				while (!q.empty()) {
 					V vertex = q.front();
 					q.pop();
-					if (visited[vertex]) {
-						continue;
-					}
-					visited[vertex] = true;
 
 					for (Edge neighbor : G[vertex]._edge) {
+						if (visited[neighbor._name] == size) {
+							break;
+						}
 						V name = neighbor._name;
 						Distance dist = neighbor._dist;
-
+						double a = distance[vertex];
+						double b = dist;
+						double c = distance[name];
 						if (distance[vertex] + dist < distance[name]) {
 							distance[name] = distance[vertex] + dist;
+							visited[name]++;
 							q.push(name);
+
 						}
 					}
 
@@ -222,6 +226,7 @@ namespace graph {
 					for (Edge neighbor : G[key]._edge) {
 						V name = neighbor._name;
 						Distance dist = neighbor._dist;
+
 						if (distance[key] + dist < distance[name]) {
 							cout << "That is, you, dear user, in all seriousness, launched a function called BellmanFord,\n which implements the Belman Ford algorithm for finding the shortest paths in a graph.\n At the same time, I did not think about the limitations of this algorithm.\n You made a terrible mistake, your graph contains so-called NEGATIVE cycles\n, in your opinion this algorithm should at least calculate something for you, if you can’t even keep such\n a small thought in your head, !===JUST REMOVE THE NEGATIVE CYCLES===!. Thanks for understanding."<<endl;
 							cout << " /$$$$$$$  /$$$$$$$$ /$$       /$$       /$$      /$$  /$$$$$$  /$$   /$$       /$$$$$$$$ /$$$$$$  /$$$$$$$  /$$$$$$$\n"
@@ -232,7 +237,7 @@ namespace graph {
 								<< "| $$  | $$| $$      | $$      | $$      | $$|  $ | $$| $$  | $$| $$|  $$$      | $$     | $$  | $$| $$  | $$| $$  | $$\n"
 								<< "| $$$$$$$/| $$$$$$$$| $$$$$$$$| $$$$$$$$| $$ |/  | $$| $$  | $$| $$ |  $$      | $$     |  $$$$$$/| $$  | $$| $$$$$$$/\n"
 								<< "|_______/ |________/|________/|________/|__/     |__/|__/  |__/|__/  |__/      |__/      |______/ |__/  |__/|_______/";
-							throw std::invalid_argument("negative value");
+							throw std::invalid_argument("negative cycles");
 						}
 					}
 				}
@@ -240,7 +245,7 @@ namespace graph {
 			}
 			else {
 				cout << "This Vertex doesnt exist, sorry bro"<<endl;
-				throw std::invalid_argument("Uncorrected graph");
+				throw std::invalid_argument("Uncorrected input vertex");
 			}
 
 		}
@@ -265,9 +270,6 @@ namespace graph {
 					center = ecc;
 					names.push_back(key);
 				}
-			}
-			for (auto& name : names) {
-				cout << name;
 			}
 			return names;
 		}
