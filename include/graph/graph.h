@@ -5,6 +5,8 @@
 #include <list>
 #include <algorithm>
 #include <vector>
+#include <queue>
+#include <exception>
 
 using namespace std; 
 
@@ -34,7 +36,7 @@ namespace graph {
 		};
 
 		struct Vertex {
-			size_t _num = 0;
+			size_t _num;
 			V _name;
 			list<Edge> _edge;	
 
@@ -157,6 +159,118 @@ namespace graph {
 			return G[V]._edge.size();
 		}
 
+		void bfs(const V& start) {
+			unordered_map<V, bool> visited;
+			for (const auto& [key, val] : G) {
+				visited[key] = false;
+			}
+			queue<V> q;
+
+			visited[start] = true;
+			q.push(start);
+
+			while (!q.empty()) {
+				V vertex = q.front();
+				q.pop();
+				cout << "Visited vertex " << G[vertex]._name << endl;
+
+				for (Edge neighbor : G[vertex]._edge) {
+					if (!visited[neighbor._name]) {
+						visited[neighbor._name] = true;
+						q.push(neighbor._name);
+					}
+				}
+			}
+		}
+
+		unordered_map<V, Distance>  BellmanFord(const V& start) {
+			if (G.contains(start)) {
+				unordered_map<V, Distance> distance;
+				for (const auto& [key, val] : G) {
+					distance[key] = numeric_limits<Distance>::max();
+				}
+				unordered_map<V, bool> visited;
+				for (const auto& [key, val] : G) {
+					visited[key] = false;
+				}
+				queue<V> q;
+				distance[start] = 0;
+				q.push(start);
+
+				while (!q.empty()) {
+					V vertex = q.front();
+					q.pop();
+					if (visited[vertex]) {
+						continue;
+					}
+					visited[vertex] = true;
+
+					for (Edge neighbor : G[vertex]._edge) {
+						V name = neighbor._name;
+						Distance dist = neighbor._dist;
+
+						if (distance[vertex] + dist < distance[name]) {
+							distance[name] = distance[vertex] + dist;
+							q.push(name);
+						}
+					}
+
+				}
+
+				//Негативные велосипеды (cycles = велосипед типа)
+				for (const auto& [key, val] : G) {
+					for (Edge neighbor : G[key]._edge) {
+						V name = neighbor._name;
+						Distance dist = neighbor._dist;
+						if (distance[key] + dist < distance[name]) {
+							cout << "That is, you, dear user, in all seriousness, launched a function called BellmanFord,\n which implements the Belman Ford algorithm for finding the shortest paths in a graph.\n At the same time, I did not think about the limitations of this algorithm.\n You made a terrible mistake, your graph contains so-called NEGATIVE cycles\n, in your opinion this algorithm should at least calculate something for you, if you can’t even keep such\n a small thought in your head, !===JUST REMOVE THE NEGATIVE CYCLES===!. Thanks for understanding."<<endl;
+							cout << " /$$$$$$$  /$$$$$$$$ /$$       /$$       /$$      /$$  /$$$$$$  /$$   /$$       /$$$$$$$$ /$$$$$$  /$$$$$$$  /$$$$$$$\n"
+								<< "| $$__  $$| $$_____/| $$      | $$      | $$$    /$$$ /$$__  $$| $$$ | $$      | $$_____//$$__  $$| $$__  $$| $$__  $$\n"
+								<< "| $$  | $$| $$      | $$      | $$      | $$$$  /$$$$| $$  | $$| $$$$| $$      | $$     | $$  | $$| $$  | $$| $$  | $$\n"
+								<< "| $$$$$$$ | $$$$$   | $$      | $$      | $$ $$/$$ $$| $$$$$$$$| $$ $$ $$      | $$$$$  | $$  | $$| $$$$$$$/| $$  | $$\n"
+								<< "| $$__  $$| $$__/   | $$      | $$      | $$  $$$| $$| $$__  $$| $$  $$$$      | $$__/  | $$  | $$| $$__  $$| $$  | $$\n"
+								<< "| $$  | $$| $$      | $$      | $$      | $$|  $ | $$| $$  | $$| $$|  $$$      | $$     | $$  | $$| $$  | $$| $$  | $$\n"
+								<< "| $$$$$$$/| $$$$$$$$| $$$$$$$$| $$$$$$$$| $$ |/  | $$| $$  | $$| $$ |  $$      | $$     |  $$$$$$/| $$  | $$| $$$$$$$/\n"
+								<< "|_______/ |________/|________/|________/|__/     |__/|__/  |__/|__/  |__/      |__/      |______/ |__/  |__/|_______/";
+							throw std::invalid_argument("negative value");
+						}
+					}
+				}
+				return distance;
+			}
+			else {
+				cout << "This Vertex doesnt exist, sorry bro"<<endl;
+				throw std::invalid_argument("Uncorrected graph");
+			}
+
+		}
+
+		Distance get_eccentricity(const V& vertex) {
+			unordered_map<V, Distance> min_distance= BellmanFord(vertex);
+			Distance ecc = -1;
+			for (const auto& [key, val] : min_distance) {
+				if (val > ecc) {
+					ecc = val;
+				}
+			}
+			return ecc;
+		}
+
+		vector<V> find_center() {
+			Distance center = numeric_limits<Distance>::max();
+			vector<V> names;
+			for (const auto& [key, val] : G) {
+				Distance ecc = get_eccentricity(key);
+				if (ecc < center) {
+					center = ecc;
+					names.push_back(key);
+				}
+			}
+			for (auto& name : names) {
+				cout << name;
+			}
+			return names;
+		}
 		void print() {
 			for (const auto& [key, V] : G)
 				std::cout << key <<"->" << " " << V << std::endl;
