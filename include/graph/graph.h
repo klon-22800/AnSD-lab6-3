@@ -16,7 +16,6 @@ namespace graph {
 	private:
 		
 		struct Edge {
-			size_t _num;
 			V _name;
 			Distance _dist;
 
@@ -26,6 +25,7 @@ namespace graph {
 
 				return os;
 			}
+
 			friend ostream& operator<<(ostream& os, const list<Edge>& list)
 			{
 				for (Edge E : list)
@@ -36,7 +36,6 @@ namespace graph {
 		};
 
 		struct Vertex {
-			size_t _num;
 			V _name;
 			list<Edge> _edge;	
 
@@ -50,8 +49,6 @@ namespace graph {
 		unordered_map<V, Vertex> G;
 
 	public:
-		Graph() = default;
-		~Graph() = default;
 		//VERTEX
 		bool has_vertex(const V& val) const {
 			if (G.contains(val))
@@ -68,13 +65,13 @@ namespace graph {
 		}
 
 		void add_vertex(const V& val) {
-			G[val] = Vertex{ 0, val, list<Edge>{} };
+			G[val] = Vertex{ val, list<Edge>{} };
 		}
 
 		//EDGE
 		bool add_edge(const V& from, const V& to, const Distance dist) {
 			if (G.contains(from) && G.contains(to)) {
-				Edge E{0, to, dist};
+				Edge E{ to, dist};
 				G[from]._edge.push_back(E);
 				return true;
 			}
@@ -122,7 +119,7 @@ namespace graph {
 		}
 
 		bool remove_edge(const V& from, const V& to, Distance dist) {
-			if (has_edge(from, to)) {
+			if (has_edge(from, to, dist)) {
 				for (typename list<Edge>::iterator it = ++G[from]._edge.begin(); it != G[from]._edge.end(); it++) {
 					if (it->_name == to && it->_dist == dist) {
 						typename list<Edge>::iterator it_tmp = it;
@@ -149,6 +146,18 @@ namespace graph {
 				return edges;
 			}
 			return edges;
+		}
+
+		list<Edge>::const_iterator edges_it(const V& val) {
+			if (G.contains(val)) {
+				return G[val]._edge.begin();
+			}
+		}
+
+		unordered_map<V, Vertex>::const_iterator vertex_it() {
+			if (order()) {
+				return G.begin();
+			}
 		}
 
 		size_t order() const {
@@ -208,9 +217,6 @@ namespace graph {
 						}
 						V name = neighbor._name;
 						Distance dist = neighbor._dist;
-						double a = distance[vertex];
-						double b = dist;
-						double c = distance[name];
 						if (distance[vertex] + dist < distance[name]) {
 							distance[name] = distance[vertex] + dist;
 							visited[name]++;
@@ -245,9 +251,8 @@ namespace graph {
 			}
 			else {
 				cout << "This Vertex doesnt exist, sorry bro"<<endl;
-				throw std::invalid_argument("Uncorrected input vertex");
+				throw std::invalid_argument("Incorrect input vertex");
 			}
-
 		}
 
 		Distance get_eccentricity(const V& vertex) {
@@ -273,6 +278,7 @@ namespace graph {
 			}
 			return names;
 		}
+
 		void print() {
 			for (const auto& [key, V] : G)
 				std::cout << key <<"->" << " " << V << std::endl;
