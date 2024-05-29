@@ -235,7 +235,7 @@ TEST(Functions_test, vertex_list) {
 
 }
 
-TEST(Functions_test, bfs_func) {
+TEST(Functions_test, bfs_func_print) {
 	Graph<string> G;
 	G.add_vertex("Moscow");
 	G.add_vertex("Samara");
@@ -245,8 +245,30 @@ TEST(Functions_test, bfs_func) {
 	G.add_edge("Moscow", "Samara", 1060);
 	G.add_edge("Moscow", "Togliatti", 800);
 	G.add_edge("Moscow", "Peterburg", 700);
+	auto printVertex = [](string vertex) {
+		cout << "Visited vertex with id: " << vertex << endl;
+		};
+	G.bfs_func("Moscow", printVertex);
+}
 
-	/*G.bfs_func("Moscow", std::function<void(const string&)>(printVertex<string>));*/
+TEST(Functions_test, bfs_func_vect) {
+	Graph<string> G;
+	G.add_vertex("Moscow");
+	G.add_vertex("Samara");
+	G.add_vertex("Togliatti");
+	G.add_vertex("Peterburg");
+
+	G.add_edge("Moscow", "Samara", 1060);
+	G.add_edge("Moscow", "Togliatti", 800);
+	G.add_edge("Moscow", "Peterburg", 700);
+	vector<string> vect;
+	auto vertex_vect = [&vect](const string& vertex) {
+		vect.push_back(vertex);
+		};
+	G.bfs_func("Moscow", vertex_vect);
+	for (const auto& item : vect) {
+		cout << item<<endl;
+	}
 }
 TEST(Functions_test, bell) {
 	Graph<string> G;
@@ -267,7 +289,7 @@ TEST(Functions_test, bell) {
 	G.add_edge("4", "2", 1);
 
 
-	unordered_map<string,vector<string>> a = G.huyomoyo("1");
+	unordered_map<string,vector<string>> a = G.BellmanFord_path("1");
 	for (const auto& [key, val] : a) {
 		for (int i = 0; i < a[key].size(); i++) {
 			cout << a[key][i] << "->";

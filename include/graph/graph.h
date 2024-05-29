@@ -141,7 +141,7 @@ namespace graph {
 		}
 
 		//UTILS
-		vector<pair<V, Distance>> edges_vector(const V& val) {
+		vector<pair<V, Distance>> edges_vector(const V& val) const {
 			vector<pair<V, Distance>> edges;
 			if (G.contains(val)) {
 				for (typename list<Edge>::iterator it = G[val]._edge.begin(); it != G[val]._edge.end(); it++) {
@@ -209,7 +209,7 @@ namespace graph {
 			}
 		}
 
-		void bfs_func(const V& start, std::function<void(const Vertex&)> action){
+		void bfs_func(const V& start, const std::function<void(V)>& func){
 			unordered_map<V, bool> visited;
 			for (const auto& [key, val] : G) {
 				visited[key] = false;
@@ -222,7 +222,7 @@ namespace graph {
 			while (!q.empty()) {
 				V vertex = q.front();
 				q.pop();
-				action(vertex);
+				func(vertex);
 
 				for (Edge neighbor : G[vertex]._edge) {
 					if (!visited[neighbor._name]) {
@@ -296,7 +296,7 @@ namespace graph {
 			}
 		}
 
-		unordered_map<V, vector<V>> huyomoyo(const V& start) {
+		unordered_map<V, vector<V>> BellmanFord_path(const V& start) {
 			if (G.contains(start)) {
 				unordered_map<V, vector<V>> path;
 				for (const auto& [key, val] : G) {
@@ -412,10 +412,7 @@ namespace graph {
 		
 	};
 
-	template <typename V>
-	void printVertex(const V& vertex) {
-		cout << "Visited vertex with id: " << vertex << endl;
-	}
+
 	template <typename V, typename Vertex>
 	ostream& operator<<(ostream& os, const unordered_map<V, Vertex>& map)
 	{
