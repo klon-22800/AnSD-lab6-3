@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include<functional>
+#include <functional>
 #include <unordered_map>
 #include <iterator>
 #include <list>
@@ -75,7 +75,7 @@ namespace graph {
 		//EDGE
 		bool add_edge(const V& from, const V& to, const Distance dist) {
 			if (G.contains(from) && G.contains(to)) {
-				Edge E{ to, dist};
+				Edge E{to, dist};
 				G[from]._edge.push_back(E);
 				return true;
 			}
@@ -93,7 +93,7 @@ namespace graph {
 			return false;
 		}
 
-		bool has_edge(const V& from, const V& to, Distance dist) {
+		bool has_edge(const V& from, const V& to, Distance dist) const {
 			if (G.contains(from) && G.contains(to)) {
 				for (Edge E : G[from]._edge) {
 					if (E._name == to && E._dist == dist) {
@@ -276,7 +276,7 @@ namespace graph {
 
 						if (distance[key] + dist < distance[name]) {
 							cout << "That is, you, dear user, in all seriousness, launched a function called BellmanFord,\n which implements the Belman Ford algorithm for finding the shortest paths in a graph.\n At the same time, I did not think about the limitations of this algorithm.\n You made a terrible mistake, your graph contains so-called NEGATIVE cycles\n, in your opinion this algorithm should at least calculate something for you, if you can’t even keep such\n a small thought in your head, !===JUST REMOVE THE NEGATIVE CYCLES===!. Thanks for understanding."<<endl;
-							cout << " /$$$$$$$  /$$$$$$$$ /$$       /$$       /$$      /$$  /$$$$$$  /$$   /$$       /$$$$$$$$ /$$$$$$  /$$$$$$$  /$$$$$$$\n"
+							cout << "/$$$$$$$  /$$$$$$$$ /$$       /$$       /$$      /$$  /$$$$$$  /$$   /$$       /$$$$$$$$ /$$$$$$  /$$$$$$$  /$$$$$$$\n"
 								<< "| $$__  $$| $$_____/| $$      | $$      | $$$    /$$$ /$$__  $$| $$$ | $$      | $$_____//$$__  $$| $$__  $$| $$__  $$\n"
 								<< "| $$  | $$| $$      | $$      | $$      | $$$$  /$$$$| $$  | $$| $$$$| $$      | $$     | $$  | $$| $$  | $$| $$  | $$\n"
 								<< "| $$$$$$$ | $$$$$   | $$      | $$      | $$ $$/$$ $$| $$$$$$$$| $$ $$ $$      | $$$$$  | $$  | $$| $$$$$$$/| $$  | $$\n"
@@ -358,7 +358,7 @@ namespace graph {
 
 						if (distance[key] + dist < distance[name]) {
 							cout << "That is, you, dear user, in all seriousness, launched a function called BellmanFord,\n which implements the Belman Ford algorithm for finding the shortest paths in a graph.\n At the same time, I did not think about the limitations of this algorithm.\n You made a terrible mistake, your graph contains so-called NEGATIVE cycles\n, in your opinion this algorithm should at least calculate something for you, if you can’t even keep such\n a small thought in your head, !===JUST REMOVE THE NEGATIVE CYCLES===!. Thanks for understanding." << endl;
-							cout << " /$$$$$$$  /$$$$$$$$ /$$       /$$       /$$      /$$  /$$$$$$  /$$   /$$       /$$$$$$$$ /$$$$$$  /$$$$$$$  /$$$$$$$\n"
+							cout << "/$$$$$$$  /$$$$$$$$ /$$       /$$       /$$      /$$  /$$$$$$  /$$   /$$       /$$$$$$$$ /$$$$$$  /$$$$$$$  /$$$$$$$\n"
 								<< "| $$__  $$| $$_____/| $$      | $$      | $$$    /$$$ /$$__  $$| $$$ | $$      | $$_____//$$__  $$| $$__  $$| $$__  $$\n"
 								<< "| $$  | $$| $$      | $$      | $$      | $$$$  /$$$$| $$  | $$| $$$$| $$      | $$     | $$  | $$| $$  | $$| $$  | $$\n"
 								<< "| $$$$$$$ | $$$$$   | $$      | $$      | $$ $$/$$ $$| $$$$$$$$| $$ $$ $$      | $$$$$  | $$  | $$| $$$$$$$/| $$  | $$\n"
@@ -397,7 +397,7 @@ namespace graph {
 			vector<V> names;
 			for (const auto& [key, val] : G) {
 				Distance ecc = get_eccentricity(key);
-				if (ecc < center) {
+				if (ecc <= center) {
 					center = ecc;
 					names.push_back(key);
 				}
